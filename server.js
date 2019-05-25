@@ -1,24 +1,22 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const bodyParser = require("body-parser");
 const path = require("path");
 const app = express();
+const config = require('config');
+app.use(express.json());
 
-app.use(bodyParser.json());
-
-const db = require('./config/keys').mongURI;
-
-
-const items = require('./routes/api/items');
+const db = config.get('mongURI');
 
 // Connect db
 mongoose
-.connect(db)
+.connect(db,{useNewUrlParser:true, useCreateIndex:true})
 .then(()=> console.log("DB connected."))
 .catch(err=> console.log(err));
 
 //Assert Route
-app.use('/api/items', items);
+app.use('/api/items', require('./routes/api/items'));
+app.use('/api/users', require('./routes/api/users'));
+app.use('/api/auth', require('./routes/api/auth'));
 
 if(process.env.NODE_ENV === 'production'){
     app.use(express.static('client/build'));

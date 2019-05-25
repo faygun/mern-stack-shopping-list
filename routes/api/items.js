@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-
+const auth = require('../../middleware/auth');
 const Item = require('../../models/Item');
 
 router.get('/',(req, res)=>{
@@ -11,7 +11,7 @@ router.get('/',(req, res)=>{
 } );
 
 
-router.post('/',(req, res)=>{
+router.post('/', auth, (req, res)=>{
     const newItem = new Item({
         name : req.body.name
     });
