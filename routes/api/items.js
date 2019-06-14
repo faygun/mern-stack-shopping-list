@@ -11,7 +11,7 @@ router.get('/',(req, res)=>{
 } );
 
 
-router.post('/', auth, (req, res)=>{
+router.post('/', (req, res)=>{
     const newItem = new Item({
         name : req.body.name
     });
