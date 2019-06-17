@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import {
     Collapse,
     Navbar,
@@ -6,13 +6,21 @@ import {
     NavbarBrand,
     Nav,
     NavItem,
-    NavLink,
     Container } from 'reactstrap';
+import RegisterModal from './auth/RegisterModal';
+import LoginModal from './auth/LoginModal';
+import Logout from './auth/Logout';
+import {connect} from 'react-redux';
+import PropTypes from 'prop-types'
 
 class AppNavbar extends Component{
     state = {
         isOpen:false
     };
+
+    static propTypes = {
+        auth:PropTypes.object.isRequired
+    }
 
     toogle = ()=>{
         this.setState({
@@ -21,6 +29,31 @@ class AppNavbar extends Component{
     };
 
     render(){
+        const{isAuthanticated, user} = this.props.auth;
+
+        const authLinks = (
+            <Fragment>
+                <NavItem>
+                    <span className="navbar-text mr-3">
+                        <strong>{user ? `Welcome ${user.name}` : ''}</strong>
+                    </span>
+                </NavItem>
+                <NavItem>
+                    <Logout />
+                </NavItem>
+            </Fragment>
+        )
+
+        const guestLinks = (
+            <Fragment>
+                <NavItem>
+                    <RegisterModal />
+                </NavItem>
+                <NavItem>
+                    <LoginModal />
+                </NavItem>
+            </Fragment>
+        )
         return(
             <div>
                 <Navbar color="dark" dark expand="sm" className="mb-5">
@@ -29,9 +62,7 @@ class AppNavbar extends Component{
                         <NavbarToggler onClick={this.toogle}/>
                         <Collapse isOpen={this.state.isOpen} navbar>
                             <Nav className="ml-auto" navbar>
-                                <NavItem>
-                                    <NavLink href="https://github.com/faygun">Github</NavLink>
-                                </NavItem>
+                                {isAuthanticated ? authLinks : guestLinks}
                             </Nav>
                         </Collapse>
                     </Container>
@@ -40,5 +71,7 @@ class AppNavbar extends Component{
         );
     }
 }
-
-export default AppNavbar;
+const mapStateToProp = state =>({
+    auth : state.auth
+})
+export default connect(mapStateToProp, null)(AppNavbar);

@@ -15,11 +15,11 @@ router.post('/',(req, res)=>{
         
     User.findOne({email})
         .then(user=>{
-            if(!user) return res.status(400).json({msg:'User Does not exist'});
+            if(!user) return res.status(400).json('User Does not exist');
 
            bcrypt.compare(password, user.password)
            .then(isMatch => {
-               if(!isMatch) return res.status(400).json({msg:'Invalid credentials'})
+               if(!isMatch) return res.status(400).json('Invalid credentials')
 
                jwt.sign(
                 {id:user.id}, 
@@ -46,6 +46,13 @@ router.post('/',(req, res)=>{
 router.get('/user', auth, (req, res) => {
     User.findById(req.user.id)
         .select('-password')
-        .then(user=> res.json(user));
+        .then(user=> res.json({
+            token:user.token,
+            user:{
+                name:user.name,
+                email:user.email,
+                id: user.id
+            }
+        }));
 });
 module.exports = router;
